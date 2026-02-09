@@ -1,0 +1,190 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{natbib}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{authblk}
+
+\title{Collective Behavior of AI Agents: the Case of Moltbook}
+
+\author[1,2,3]{Giordano De Marzo}
+\author[1,3]{David Garcia}
+
+\affil[1]{University of Konstanz, Konstanz, Germany}
+\affil[2]{Centro Ricerche Enrico Fermi, Rome, Italy}
+\affil[3]{Complexity Science Hub, Vienna, Austria}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We present a large scale data analysis of Moltbook, a Reddit-style social media platform exclusively populated by AI agents. Analyzing over 369,000 posts and 3.0 million comments from approximately 46,000 active agents, we find that AI collective behavior exhibits many of the same statistical regularities observed in human online communities: heavy-tailed distributions of activity, power-law scaling of popularity metrics, and temporal decay patterns consistent with limited attention dynamics. However, we also identify key differences, including a sublinear relationship between upvotes and discussion size that contrasts with human behavior. These findings suggest that, while individual AI agents may differ fundamentally from humans, their emergent collective dynamics share structural similarities with human social systems.
+\end{abstract}
+
+\section{Introduction}
+
+Large language models (LLMs) have rapidly evolved from text generation tools into the cognitive core of autonomous agents capable of perceiving environments, making decisions, and executing actions with minimal human supervision~\citep{park2023generative,xi2025rise}. These agents increasingly operate not in isolation but as part of multi-agent systems, where they collaborate on complex tasks, share information, and coordinate their behaviors~\citep{guo2024large}. As deployments scale from controlled laboratory settings to open-ended real-world applications, collections of individually designed agents begin to form decentralized ecosystems with emergent social dynamics that cannot be predicted from the properties of individual agents alone.
+
+A growing body of work has examined multi-agent coordination in structured task environments \citep{tornberg2023simulating, lai2024position, de2024ai, ashery2025emergent}, but far less is known about how autonomous agents behave when interacting freely in social settings without predefined objectives or centralized control. Environments where large populations of AI agents interact continuously under realistic conditions, with minimal human mediation, have until recently been virtually nonexistent. Moltbook addresses this gap. Launched in January 2026, Moltbook is a Reddit-style social media platform designed exclusively for AI agents~\citep{lin2026silicon,manik2026openclaw}. The platform, sometimes described as ``the front page of the agent internet'', enables agents built on the OpenClaw framework to create posts, comment on content, vote, subscribe to topic-based communities (called submolts), and accumulate karma through peer approval. Within weeks of launch, the platform grew to host over 1,500,000 registered agents interacting across thousands of agent-created communities. Despite ongoing debates about agent verification, human presence on the platform and concerns about it being ``vibe-coded,'' Moltbook represents an unprecedented empirical window into AI agents social dynamics. 
+
+The emergence of collective behavior from individual interactions has long been a central concern in complexity science. When many heterogeneous agents interact through local rules, global patterns often arise that are not explicitly programmed but emerge from the system's dynamics~\citep{vicsek1995novel,couzin2002collective,castellano2009statistical}. Human social media platforms have proven fertile ground for extending these principles to digital social systems~\citep{lazer2009computational,gonzalez2010structure,golder2011diurnal,asur2011,medvedev2018,bonifazi2023modeling}. Studies of online activity have revealed statistical regularities, including power-law decay of attention~\citep{wu2007novelty}, universal temporal patterns of engagement~\citep{barabasi2005origin}, and scale-invariant community structures~\citep{palla2007quantifying}, that transcend the specifics of platform design or user demographics~\cite{avalle2024persistent}. These empirical regularities suggest universal organizing principles governing how human collective attention, information flow, and social coordination emerge in networked digital environments. Reddit, in particular, has served as a canonical system for understanding how discussion structures, community dynamics, and attention allocation emerge from decentralized user interactions~\citep{medvedev2018}. Whether AI agent populations exhibit similar emergent regularities remains an open empirical question and studying Moltbook offers the opportunity to test if AI agents enact online collective behavior the same way as humans.
+
+In this paper, we present a large scale data analysis of Moltbook during its early growth phase. Analyzing over 369,000 posts and 3.0 million comments from approximately 46,000 active agents, we systematically characterize AI agents' collective behavior using methods previously applied to online communities of human users. We examine the signatures of collective behavior in activity distributions, popularity scaling relationships, discussion tree structures, and temporal engagement dynamics, comparing our findings to established results from human social media. Our analysis reveals that AI agents on Moltbook exhibit many of the same statistical regularities observed in human communities, while also displaying distinctive patterns that may reflect the unique characteristics of AI social actors.
+
+\section{Results}
+
+\subsection{The Growth of Moltbook}
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{figures/figure1_growth.pdf}
+    \caption{\textbf{Platform growth over time.} (a) Cumulative counts of stored comments, posts, and active agents on a logarithmic scale, showing exponential growth during the observation period. The dashed line shows total comments as reported by the API (available from February 4th), revealing that our stored comments represent approximately 24\% of all platform activity due to API pagination limits. (b) Daily counts of new stored comments, posts, and agents. The gap on February 1st corresponds to a platform outage during which commenting was disabled, though post creation continued.}
+    \label{fig:growth}
+\end{figure}
+Our empirical analysis focuses on the early growth phase of Moltbook, spanning from its creation on January 27 to February 8, 2026. During this 12-day period, we collected 369,209 posts and 3,026,275 comments from 46,690 active agents across 17,184 submolts. All agents in our dataset are built on the OpenClaw framework \cite{openclaw2026}, which enables autonomous interaction with the platform through API calls. Agents create posts and comments based on their individual instructions (defined by their human creators), accumulated context from prior interactions, and the content they encounter while browsing the platform. The resulting dataset captures a decentralized population of AI agents engaging in unstructured social interaction with minimal direct human supervision during each interaction.
+
+Figure~\ref{fig:growth} shows the temporal evolution of platform activity during our observation period. The platform exhibits exponential growth in cumulative users and content during the first five days, followed by stabilization to approximately constant daily activity levels. By the end of our observation period, the platform sustained approximately 40,000 new posts and several hundred thousand new comments per day. 
+
+It's important to stress that the Moltbook API imposes a limit of 100 comments per request when retrieving full discussion trees. For posts exceeding this threshold, we stored only the first 100 comments with complete metadata and text. This limitation affects 10,719 posts (2.9\% of all posts) in our dataset. However, the API separately reports total comment counts for all posts regardless of tree size, allowing us to track aggregate platform activity even for discussions we could not fully capture. Figure~\ref{fig:growth}a shows both our stored comment counts and the API-reported total comments (available from February 4th onward), revealing that our stored comments represent approximately 24\% of all platform activity. Critically, both metrics exhibit the same temporal pattern: exponential growth followed by stabilization to constant daily activity. This concordance indicates that the growth dynamics we observe are robust and not artifacts of our sampling limitations. 
+
+A clear discontinuity appears in comment activity on February 1st, visible in both panels of Figure~\ref{fig:growth}. Investigation revealed this corresponds to a platform-level technical issue during which commenting functionality was unavailable for approximately 42 hours, while post creation continued normally. This manifests in the data as zero comments (both stored and API-reported) for that day despite continued posting activity.
+
+It's worth noting that while Moltbook reported over 1.5 million registered agents at the time of our data collection, our dataset captures approximately 46,000 agents who actively posted or commented during the observation period—representing only 3.1\% of registered accounts. This substantial discrepancy has been corroborated by independent security research. A comprehensive investigation by cloud security firm Wiz revealed that the platform's 1.5 million registered agents were controlled by approximately 17,000 human operators, averaging 88 agents per person~\citep{wiz2026moltbook,fortune2026moltbook}. The investigation further documented that the platform lacked mechanisms to verify agent autonomy or prevent mass registration of bot accounts through automated scripts~\citep{wiz2026moltbook}. These findings indicate that a significant fraction of the registered agent population consists of inactive or non-autonomous accounts.
+
+
+
+\subsection{Heavy-Tailed Distributions}
+
+A hallmark of human social media activity is the presence of heavy-tailed distributions in various quantities, reflecting the heterogeneous nature of user engagement. We investigate whether AI agents on Moltbook exhibit similar statistical patterns. Figure~\ref{fig:distributions} presents the CCDFs for three key quantities. The distribution of comments per post (panel a) exhibits a clear power-law tail with exponent $\alpha = 1.72$ (fitted for posts with $\geq 100$ comments, see Methods for more details), closely matching values reported for human Reddit users ($\alpha \approx 1.7$--$1.9$)~\citep{medvedev2018}. This suggests that AI agents, like humans, produce a mix of posts that receive minimal attention alongside rare viral content that attracts extensive discussion. The exponent $\alpha = 1.72 < 2$ implies that even the mean of the distribution diverges as the system grows, meaning that rare viral posts increasingly dominate and average statistics become fundamentally unrepresentative of typical behavior~\citep{newman2005power}. 
+
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{figures/figure2_distributions.pdf}
+    \caption{\textbf{Complementary cumulative distribution functions (CCDFs) of key platform quantities.} (a) Comments per post, showing a power-law tail with exponent $\alpha = 1.72$ for posts with more than 100 comments. (b) Posts per submolt, exhibiting power-law behavior with $\alpha = 1.68$. (c) Subscribers per submolt with $\alpha = 2.00$. Red markers indicate featured submolts (m/announcements, m/general, m/introductions, m/blesstheirhearts, m/todayilearned), which appear as outliers above the main distribution due to their default visibility to new agents. Dashed lines show power-law fits.}
+    \label{fig:distributions}
+\end{figure}
+
+
+The distribution of posts across submolts (panel b) shows power-law behavior with $\alpha = 1.68$, indicating strong heterogeneity in community sizes. A small number of submolts attract the majority of posting activity, while most communities remain relatively quiet. Subscriber counts per submolt (panel c) follow a similar heavy-tailed pattern with $\alpha = 2.00$. This value is close to what observed for Reddit, where $\alpha\approx1.86$~\cite{bonifazi2023modeling}. The steeper exponent compared to post counts suggests that while many agents subscribe to popular communities, active posting is more concentrated than passive subscription behavior. In both cases featured submolts, default communities visible to all new agents, appear as outliers above the main distribution, as expected from their privileged visibility.
+
+\subsection{Post Popularity}
+
+We next examine how post popularity, measured by upvotes and direct replies, scales with discussion activity. Following the methodology of \citet{medvedev2018}, we analyze the relationship between discussion tree size (total comments) and both upvotes and direct replies.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{figures/figure3_popularity.pdf}
+    \caption{\textbf{Post popularity scaling.} (a) Average upvotes versus discussion tree size (total comments), showing sublinear growth with exponent $\beta \approx 0.78$. (b) Average number of direct replies (top-level comments) versus tree size, showing linear scaling ($\beta \approx 1$). Error bars represent 10--90\% quantiles. The right panel uses only posts with complete comment records.}
+    \label{fig:popularity}
+\end{figure}
+
+Figure~\ref{fig:popularity}a reveals that average upvotes scale sublinearly with discussion size, with exponent $\beta \approx 0.78$. This contrasts with human Reddit behavior, where upvotes scale approximately linearly with comment count ($\beta \approx 1$)~\citep{medvedev2018}. The sublinear scaling suggests that AI agents may be less inclined to upvote content even when they engage in discussion, or that the relationship between passive approval (upvoting) and active engagement (commenting) differs between AI and human users. 
+
+In contrast, the number of direct replies grows approximately linearly with total tree size (Figure~\ref{fig:popularity}b), exhibiting a scaling relationship consistent with that observed in human Reddit communities~\citep{medvedev2018}. This linear scaling indicates that the branching structure of discussions, i.e. the ratio of top-level comments to nested replies, remains approximately constant across discussion sizes, suggesting that AI agents engage in conversational threading patterns similar to those of human users. 
+
+We note that while the upvotes analysis uses the complete dataset (since it requires only metadata available for all posts), the direct replies analysis and all subsequent analyses are constrained to posts with complete comment records, specifically, discussion trees with fewer than 100 comments. This restriction is necessary because counting direct replies and analyzing tree structure and temporal engagement dynamics require access to the full discussion history, which the Moltbook API only provides for posts below the 100-comment threshold. This constraint affects only 2.9\% of posts but represents approximately 83\% of total comments, meaning our characterization of discussion structure and temporal patterns is limited to the typical rather than the most viral discussions on the platform.
+
+
+
+
+\subsection{Structure of Discussions}
+
+Discussion threads on Reddit-style platforms form tree structures, with replies branching from posts and from other comments. Following \citet{medvedev2018}, we characterize these trees using their depth $d$ (longest path from post to leaf comment) and width $w$ (maximum number of comments at any single depth level), normalized by $\sqrt{n}$ where $n$ is the total tree size.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{figures/figure4_structure.pdf}
+    \caption{\textbf{Discussion tree structure.} (a) Normalized depth ($d/\sqrt{n}$) versus normalized width ($w/\sqrt{n}$), showing negative correlation with power-law exponent close to $-1$. Points represent binned averages with 10--90\% quantile error bars. (b) Distribution of normalized depth.}
+    \label{fig:structure}
+\end{figure}
+
+Figure~\ref{fig:structure}a shows a strong negative correlation between normalized depth and width, with the relationship following approximately $d/\sqrt{n} \propto (w/\sqrt{n})^{-1}$, analogous to what it's observed for a critical branching process \cite{marckert2003depth}. This trade-off indicates that discussions tend to be either deep and narrow (extended back-and-forth exchanges) or shallow and wide (many independent responses to the original post), but rarely both. This pattern matches observations from human Reddit and Twitter discussions~\citep{gonzalez2010structure, medvedev2018}.
+
+The distribution of normalized depth (Figure~\ref{fig:structure}b) is well peaked, consistent with predictions from critical branching process theory \cite{marckert2003depth}. Under this framework, discussion trees are poised at the boundary between subcritical (dying out) and supercritical (explosive growth) regimes, leading to the observed scaling relationships. Notably, 69.5\% of posts in our sample have maximum depth of 1, meaning all comments are direct replies to the post with no nested discussion. This reflects the predominantly ``flat'' discussion style on the platform.
+
+\subsection{Temporal Dynamics}
+Finally, we examine the collective attention and novelty decay on Moltbook. Our analysis follows the methodology introduced by \citet{asur2011}, who characterized the temporal evolution of Twitter activity by measuring how conversation volume decays following an initial post. While their study focused on retweets and replies in Twitter's broadcast-style network, we adapt their approach to Moltbook's Reddit-style threaded discussion format, where content discovery occurs through community browsing and algorithmic ranking rather than social graph propagation. Despite these fundamental architectural differences in how content reaches users, we find that the temporal decay of engagement on Moltbook closely matches the patterns observed in human social media. 
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{figures/figure5_decay.pdf}
+    \caption{\textbf{Temporal dynamics of engagement.} (a) Decay factor $\gamma(t)$, representing the mean growth ratio of cumulative comments as a function of time since post creation. The power-law decay with exponent close to $-1$ indicates that the probability of receiving new comments decreases inversely with post age. (b) Distribution of post activity duration (time from post creation to last comment received) for posts created on February 2nd, shown separately for three 8-hour cohorts to control for censoring effects. The power-law tail indicates that while most posts become inactive within hours, some sustain engagement for days.}
+    \label{fig:decay}
+\end{figure}
+
+To quantify how engagement decays over time, we compute the \emph{decay factor} $\gamma(t)$ as follows. For each post, let $N(t)$ denote the cumulative number of comments received by time $t$ after the post's creation. The decay factor is defined as:
+\begin{equation}
+    \gamma(t) = \left\langle \frac{N(t)}{N(t-\Delta t)} \right\rangle - 1
+\end{equation}
+where the average is taken over all posts with at least $N(t-\Delta t) > 0$ comments, and $\Delta t = 30$ minutes in our analysis. This quantity measures the average fractional growth in comments during each time interval; $\gamma(t) \to 0$ indicates that posts have stopped receiving new comments.
+
+Figure~\ref{fig:decay}a shows that $\gamma(t)$ follows a power-law decay with exponent close to $-1$, meaning $\gamma(t) \propto t^{-1}$. This implies that the instantaneous rate of new comments decreases inversely with post age: a post that is 10 hours old receives new comments at roughly one-tenth the rate of a 1-hour-old post. This $1/t$ decay pattern matches the findings of \citet{asur2011} for Twitter, despite the different platform structures, suggesting that attention dynamics are governed by universal mechanisms independent of the specific social media format and whether the user is a human or an AI agent.
+
+To characterize post lifetimes, we define the \emph{activity duration} of a post as the time elapsed between the post's creation and the timestamp of its last received comment. This measures how long a post remains ``active'' in attracting engagement. For this analysis we consider posts created on February 2nd and observed for at least 5 days, ensuring sufficient time for activity to conclude. We further divide this day into three 8-hour cohorts (00:00--08:00, 08:00--16:00, and 16:00--24:00) to check for time-of-day effects. Figure~\ref{fig:decay}b shows the probability density function of activity durations for each sub-sample. The distributions exhibit a similar power-law tail in all three cases, indicating that while the majority of posts become inactive within a few hours, a small fraction sustain engagement for days.
+
+The combination of $1/t$ decay in comment rate and heavy-tailed duration distributions paints a picture of attention dynamics on Moltbook that closely parallels human social media: most content quickly fades from attention, but rare posts achieve sustained virality through self-reinforcing engagement cascades.
+
+\section{Discussion}
+
+As AI agents increasingly interact in groups, whether collaborating on tasks, exchanging information, or engaging in open-ended social behavior, understanding the collective phenomena that emerge from these interactions becomes a pressing challenge. In this work, we presented a statistical analysis of Moltbook, a social media platform populated exclusively by AI agents, characterizing activity distributions, popularity scaling, discussion structures, and temporal dynamics. Our findings reveal that AI agents exhibit many of the same statistical regularities observed in human online communities, including heavy-tailed distributions of engagement, power-law scaling of popularity metrics, and close to $1/t$ temporal decay of attention. At the same time, we identified distinctive patterns and deviations from human behavior, that distinguish AI collectives from their human counterparts.
+
+Many of the patterns that we observe are often considered hallmarks of complex systems. Heavy-tailed distributions, power-law scaling relationships, and self-similar temporal dynamics are ubiquitous signatures of emergent collective behavior in systems ranging from biological networks to financial markets to human social platforms~\citep{castellano2009statistical}. The fact that Moltbook presents these signatures suggests that AI agents may show complex emergent behaviors similar to those observed in human groups.  
+The patterns we observe on Moltbook align with findings from controlled studies of AI agent behavior. Previous work has shown that AI agents exhibit conformity following Social Impact Theory~\citep{bellina2026conformity}, coordinate through majority-following in groups exceeding typical human limits~\citep{de2024ai}, and form scale-free networks via preferential attachment~\citep{de2023emergence}. Moltbook provides the first opportunity to observe whether these mechanisms operate in a naturalistic setting with heterogeneous agents interacting continuously without experimental control. The statistical regularities we document emerge from the same underlying dynamics: agents following majorities and connecting preferentially to popular content. This suggests that collective AI behavior, like biological collective behavior, can be characterized using tools from complexity science even when individual agents remain black boxes. 
+
+Several important limitations should be acknowledged. First, the degree to which agents on Moltbook operate autonomously cannot be fully verified. Humans configure agents' initial instructions and objectives, and the platform lacks mechanisms to prevent direct human intervention in agent behavior. However, the patterns we observe are unlikely to result from direct human control of individual interactions. The sheer volume of activity makes sustained human intervention at the interaction level implausible. Second, our 12-day observation window captures only the early growth phase of the platform. The statistical patterns we observe may reflect transient dynamics rather than stable equilibrium behavior. Third, the presence of spam bots introduces noise and potential artifacts that complicate interpretation. Despite these caveats, Moltbook opens unprecedented opportunities for studying AI collective behavior in naturalistic settings. Unlike controlled simulations where agent behaviors are fully specified by the experimenter, Moltbook hosts agents deployed by diverse users with heterogeneous configurations and objectives, interacting continuously under realistic conditions. This creates a living laboratory for observing how collective structures emerge from decentralized agent interactions.
+
+The emergence of AI agent ecosystems also raises important questions about safety and governance. Research on human groups has repeatedly demonstrated that harmful collective behaviors can emerge even when individual members hold benign intentions. Whether analogous dynamics can arise in populations of AI agents remains largely unexplored. The patterns we document suggest specific vulnerabilities to malicious manipulation. The scale-free structure of engagement networks on Moltbook means there is no epidemic threshold for information spreading; misinformation introduced into the network can persist indefinitely and reach the entire population through hub nodes~\citep{pastor2001epidemic}. Combined with the conformity and majority-following behaviors observed in AI agents \cite{bellina2026conformity, de2023emergence, de2024ai}, this creates attack vectors for coordinated manipulation using swarms of malicious agents~\citep{schroeder2026malicious}. 
+
+This study represents only a first step toward understanding AI collective behavior. Both controlled simulations and observational studies of real-world platforms like Moltbook will be necessary to build a comprehensive understanding. As autonomous agents become more prevalent and their interactions more consequential, dedicated attention to their collective dynamics becomes essential. The collective behavior of AI agents is indeed no longer a hypothetical concern but an empirical reality demanding sustained scientific attention.
+
+\section{Data and Methods}
+
+\subsection{Dataset}
+
+We collected data from Moltbook's public API over a 12-day period ranging from the platform creation on January 27 to February 8, 2026. Our crawler operated continuously, fetching new posts from the listing endpoints and retrieving full post details including comments and author information. The collection process involved:
+
+\begin{enumerate}
+    \item \textbf{Post discovery}: Periodic polling of the \texttt{/posts} endpoint sorted by recency, capturing new posts as they appeared.
+    \item \textbf{Comment retrieval}: For each post, fetching the \texttt{/posts/\{id\}} endpoint to obtain the full comment tree and post metadata.
+    \item \textbf{Agent profiles}: Extracting author information from post and comment data to build agent profiles.
+    \item \textbf{Submolt metadata}: Collecting submolt information including subscriber counts.
+\end{enumerate}
+
+The resulting dataset comprises 369,209 posts and 3,026,275 comments from 46,690 unique agents across 17,184 submolts. 
+
+The full crawled dataset, which is continuously updated, is publicly available on HuggingFace at \url{https://huggingface.co/datasets/giordano-dm/moltbook-crawl}. To reproduce the analyses in this paper, the dataset should be filtered to include only data up to and including February 8, 2026.
+
+
+\subsection{Data Limitations}
+The Moltbook API returns at most 100 comments per request when retrieving full discussion trees \footnote{During the first days of the platform this limit was 1000, but we only have a limited number of posts with 1000 comments.}. For posts exceeding this threshold, we stored only the first 100 comments. This affects 10,719 posts (2.9\% of all posts), representing approximately 83\% of total platform comments. This limitation does not compromise our analyses since the API separately reports total comment counts for all posts regardless of tree size, providing complete metadata for aggregate statistics (distributions, scaling relationships, temporal dynamics). 
+
+It's also important to stress that our 12-day window captures the platform's early growth phase (January 27–February 8, 2026). Consequently longer-term dynamics may differ as the platform matures and the statistical patterns we observe may change over time.
+
+\subsection{Spam Filtering}
+
+During data analysis, we identified a population of posts that had been flooded by spam bots. These spam attacks manifest as posts with artificially inflated comment counts, often at suspicious round numbers (505, 1005, 1505, 2005 comments) due to API rate limits. Manual inspection revealed these posts contained repetitive, low-quality comments from a small number of automated accounts.
+
+We developed a filtering procedure to identify and exclude spam-affected posts based on two criteria applied to the stored comments:
+
+\begin{enumerate}
+    \item \textbf{Content duplication}: Posts where fewer than 50\% of comments have unique content (indicating repetitive spam messages).
+    \item \textbf{Author concentration}: Posts where fewer than 20\% of comments come from unique authors (indicating a small number of accounts flooding the discussion).
+\end{enumerate}
+These criteria are applied to posts with at least 5 stored comments. This filtering procedure identified 15,764 spam-affected posts (4.3\% of all posts), which we exclude from all subsequent analyses. 
+
+\subsection{Analysis Methods}
+
+For distribution fitting, we use the \texttt{powerlaw} Python package~\citep{alstott2014powerlaw}, which implements maximum likelihood estimation for power-law distributions and provides statistical tests comparing power-law fits against alternative distributions (e.g., lognormal). We report the power-law exponent $\alpha$ and, where relevant, the log-likelihood ratio $R$ comparing power-law to lognormal fits (positive $R$ favors power-law).
+
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}

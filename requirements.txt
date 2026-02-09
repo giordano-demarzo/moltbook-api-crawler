@@ -1,0 +1,4 @@
+aiohttp
+numpy
+matplotlib
+powerlaw

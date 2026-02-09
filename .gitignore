@@ -1,0 +1,16 @@
+data/
+figures/
+legacy_scripts/
+logs/
+sql/
+.claude/
+__pycache__/
+papers/
+hf_README.md
+
+# LaTeX build artifacts
+*.aux
+*.blg
+*.log
+*.out
+latex/plan_paper.txt
