@@ -10,8 +10,8 @@ Three concurrent workers + background stats:
 
 Usage:
   python maintain_db_v3.py --proxies proxies.txt        # typical usage
-  python maintain_db_v3.py --concurrency 10             # listing workers (default: 5)
-  python maintain_db_v3.py --detail-concurrency 200     # comment concurrency (default: 200)
+  python maintain_db_v3.py --listing-depth 500000        # background listing depth (default: 1000000)
+  python maintain_db_v3.py --proxy-split 20 60 20       # proxy % split (default: 20 60 20)
   python maintain_db_v3.py --discovery-interval 150     # seconds between scans (default: 150)
   python maintain_db_v3.py --discovery-depth 5000       # posts per sort+time (default: 5000)
   python maintain_db_v3.py -v                           # verbose logging
@@ -859,7 +859,7 @@ async def discovery_scanner(db_path: str, queue: CommentQueue,
                             sessions: List[aiohttp.ClientSession],
                             shutdown: asyncio.Event,
                             interval: int = 150,
-                            depth: int = 5000):
+                            depth: int = 10000):
     """Worker 1: Scans 11 sort+time combos every ~interval seconds, pushes deficit posts to queue."""
     logger.info("Discovery scanner started (interval=%ds, depth=%d, combos=%d, sessions=%d)",
                 interval, depth, len(DISCOVERY_COMBOS), len(sessions))
@@ -906,8 +906,7 @@ async def _discovery_cycle(db_path: str, queue: CommentQueue,
     total_deficit = 0
     total_pushed = 0
 
-    # 1 concurrent request per proxy
-    sem = asyncio.Semaphore(len(sessions))
+    sem = asyncio.Semaphore(max(len(sessions), 10))
 
     async def _fetch_one_page(sort: str, time_filter: Optional[str], offset: int):
         """Fetch a single page under the semaphore."""
@@ -1129,13 +1128,97 @@ async def _refresh_stale_agents(db_path: str, sessions: List[aiohttp.ClientSessi
     return refreshed, bonus_comments, bonus_posts
 
 
+async def _check_random_posts(db_path: str, queue: CommentQueue,
+                              sessions: List[aiohttp.ClientSession],
+                              sem: asyncio.Semaphore, shutdown: asyncio.Event,
+                              batch_size: int = 1000) -> Tuple[int, int]:
+    """Fetch details for random non-deleted posts, push deficits to queue. Returns (checked, pushed)."""
+    conn = sqlite3.connect(db_path)
+    all_ids = [r[0] for r in conn.execute('SELECT id FROM posts WHERE deleted_at IS NULL').fetchall()]
+    conn.close()
+
+    if not all_ids:
+        return 0, 0
+
+    sample_ids = random.sample(all_ids, min(batch_size, len(all_ids)))
+    logger.info("Random post check: sampling %d posts", len(sample_ids))
+
+    stored_counts = get_stored_comment_counts(db_path)
+    chunk_size = max(len(sessions), 5)
+    total_checked = 0
+    total_pushed = 0
+    total_deleted = 0
+
+    for i in range(0, len(sample_ids), chunk_size):
+        if shutdown.is_set():
+            break
+
+        chunk = sample_ids[i : i + chunk_size]
+        tasks = [fetch_post_details(_next_session(sessions), pid, sem) for pid in chunk]
+        results = await asyncio.gather(*tasks)
+
+        chunk_deficit: List[Tuple[str, int, float]] = []
+        deleted_ids: List[str] = []
+        conn = sqlite3.connect(db_path, timeout=30)
+        cur = conn.cursor()
+        for pid, result in zip(chunk, results):
+            total_checked += 1
+            if result is None:
+                continue
+
+            if result.get("_deleted"):
+                deleted_ids.append(pid)
+                continue
+
+            if not result.get("success"):
+                continue
+
+            post_data = result.get("post", {})
+            api_cc = post_data.get("comment_count", 0)
+            stored = stored_counts.get(pid, 0)
+            deficit = api_cc - stored
+
+            author = post_data.get("author")
+            if author and author.get("id"):
+                save_agent_full(cur, author)
+
+            if deficit > 0 and not queue.in_queue(pid):
+                priority = _compute_priority(deficit, api_cc, post_data.get("created_at"))
+                chunk_deficit.append((pid, api_cc, priority))
+
+        if deleted_ids:
+            cur.executemany(
+                'UPDATE posts SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?',
+                [(pid,) for pid in deleted_ids],
+            )
+            total_deleted += len(deleted_ids)
+        conn.commit()
+        conn.close()
+
+        if chunk_deficit:
+            added = await queue.push_batch(chunk_deficit)
+            total_pushed += added
+            logger.info("  Random posts: pushed %d to queue (%d/%d checked, %d deficit, %d deleted)",
+                        added, total_checked, len(sample_ids), total_pushed, total_deleted)
+        elif deleted_ids:
+            logger.info("  Random posts: %d/%d checked, %d deleted so far",
+                        total_checked, len(sample_ids), total_deleted)
+        elif total_checked % 200 == 0:
+            logger.info("  Random posts: %d/%d checked, %d pushed, %d deleted so far",
+                        total_checked, len(sample_ids), total_pushed, total_deleted)
+
+    logger.info("Random post check complete: %d checked, %d pushed to queue, %d deleted",
+                total_checked, total_pushed, total_deleted)
+    return total_checked, total_pushed
+
+
 async def comment_fetcher(db_path: str, queue: CommentQueue,
                           sessions: List[aiohttp.ClientSession],
                           shutdown: asyncio.Event):
     """Worker 2: Continuously pulls posts from queue and fetches all 4 comment sorts.
-    When queue is empty, refreshes stale agent profiles."""
+    When queue is empty, enqueues random posts and refreshes stale agents."""
     # High concurrency — fetcher is the bottleneck
-    concurrency = max(len(sessions) * 15, 10)
+    concurrency = max(len(sessions) * 17, 500)
     # Batch size: concurrency / 4 sorts
     batch_size = max(concurrency // 4, 5)
     logger.info("Comment fetcher started (concurrency=%d, batch_size=%d, sessions=%d)",
@@ -1153,7 +1236,7 @@ async def comment_fetcher(db_path: str, queue: CommentQueue,
                 timeout=5.0,
             )
         except asyncio.TimeoutError:
-            # Queue is empty — use idle time to refresh agent profiles
+            # Queue is empty — use idle time to refresh stale agents
             await _refresh_stale_agents(db_path, sessions, sem, shutdown)
             continue
 
@@ -1186,14 +1269,12 @@ async def comment_fetcher(db_path: str, queue: CommentQueue,
         batch_new_comments = 0
         now_ts = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
-        deleted_ids: List[str] = []
         for post_id, api_cc in batch:
             sort_results = post_results.get(post_id, [])
             post_new = 0
 
-            # Only mark deleted if ALL 4 sorts returned 404
+            # Skip posts where all 4 sorts returned 404
             if sort_results and all(isinstance(r, dict) and r.get("_deleted") for r in sort_results):
-                deleted_ids.append(post_id)
                 continue
 
             for sort_result in sort_results:
@@ -1213,13 +1294,18 @@ async def comment_fetcher(db_path: str, queue: CommentQueue,
                         post_new += 1
                         batch_new_comments += 1
 
-            # Update velocity tracking
-            cur.execute('''
-                UPDATE posts
-                SET last_comment_check_at = ?,
-                    last_known_cc = ?
-                WHERE id = ?
-            ''', (now_ts, api_cc, post_id))
+            # Update velocity tracking (skip last_known_cc when api_cc=0, i.e. random posts)
+            if api_cc > 0:
+                cur.execute('''
+                    UPDATE posts
+                    SET last_comment_check_at = ?,
+                        last_known_cc = ?
+                    WHERE id = ?
+                ''', (now_ts, api_cc, post_id))
+            else:
+                cur.execute('''
+                    UPDATE posts SET last_comment_check_at = ? WHERE id = ?
+                ''', (now_ts, post_id))
 
             # Compute velocity (exponential moving average)
             row = cur.execute(
@@ -1232,13 +1318,6 @@ async def comment_fetcher(db_path: str, queue: CommentQueue,
                 # EMA with alpha=0.3
                 ema = 0.3 * new_velocity + 0.7 * old_velocity
                 cur.execute('UPDATE posts SET comment_velocity = ? WHERE id = ?', (ema, post_id))
-
-        if deleted_ids:
-            cur.executemany(
-                'UPDATE posts SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?',
-                [(pid,) for pid in deleted_ids],
-            )
-            logger.info("Comment fetcher: marked %d posts as deleted (404)", len(deleted_ids))
 
         conn.commit()
         conn.close()
@@ -1262,13 +1341,12 @@ async def comment_fetcher(db_path: str, queue: CommentQueue,
 async def background_scanner(db_path: str, queue: CommentQueue,
                              sessions: List[aiohttp.ClientSession],
                              shutdown: asyncio.Event,
-                             listing_depth: int = 200000):
-    """Worker 3: Listing scan (newest N posts) + random sample, pushes deficit posts to queue."""
-    # Listing workers = pool size (1 session each), detail concurrency = pool size
-    concurrency = len(sessions)
-    detail_concurrency = len(sessions)
-    logger.info("Background scanner started (listing_workers=%d, detail_concurrency=%d, listing_depth=%d, sessions=%d)",
-                concurrency, detail_concurrency, listing_depth, len(sessions))
+                             listing_depth: int = 1000000,
+                             interval: int = 1800):
+    """Worker 3: Listing scan of newest N posts every ~interval seconds."""
+    concurrency = max(len(sessions), 5)
+    logger.info("Background scanner started (listing_workers=%d, listing_depth=%d, interval=%ds, sessions=%d)",
+                concurrency, listing_depth, interval, len(sessions))
 
     cycle = 0
     while not shutdown.is_set():
@@ -1280,22 +1358,14 @@ async def background_scanner(db_path: str, queue: CommentQueue,
         except Exception as exc:
             logger.exception("Background scanner listing (cycle %d) error: %s", cycle, exc)
 
-        if shutdown.is_set():
-            break
-
-        try:
-            await _background_random_sample(db_path, queue, sessions, shutdown,
-                                            detail_concurrency, cycle)
-        except Exception as exc:
-            logger.exception("Background scanner random sample (cycle %d) error: %s", cycle, exc)
-
         elapsed = time.time() - t0
         logger.info("Background scanner cycle %d complete in %.1fs (%.1f min), queue=%d",
                      cycle, elapsed, elapsed / 60, queue.qsize())
 
-        # Brief sleep between cycles
+        # Sleep until next cycle
+        remaining = max(interval - elapsed, 10)
         try:
-            await asyncio.wait_for(shutdown.wait(), timeout=60)
+            await asyncio.wait_for(shutdown.wait(), timeout=remaining)
             break
         except asyncio.TimeoutError:
             pass
@@ -1601,7 +1671,8 @@ async def main_async(args):
         all_sessions.append(background_sessions)
         tasks.append(asyncio.create_task(
             background_scanner(args.db, queue, background_sessions, shutdown,
-                              listing_depth=args.listing_depth),
+                              listing_depth=args.listing_depth,
+                              interval=args.background_interval),
             name="background_scanner",
         ))
     else:
@@ -1632,12 +1703,14 @@ def main():
                         help="Proxy %% split: discovery fetcher background (default: 20 70 10)")
     parser.add_argument("--discovery-interval", type=int, default=150,
                         help="Seconds between discovery scans (default: 150)")
-    parser.add_argument("--discovery-depth", type=int, default=5000,
-                        help="Posts per sort+time combo in discovery (default: 5000)")
+    parser.add_argument("--discovery-depth", type=int, default=10000,
+                        help="Posts per sort+time combo in discovery (default: 10000)")
     parser.add_argument("--homepage-interval", type=int, default=1800,
                         help="Seconds between homepage stats fetches (default: 1800)")
-    parser.add_argument("--listing-depth", type=int, default=200000,
-                        help="Max posts to scan in background listing (default: 200000)")
+    parser.add_argument("--listing-depth", type=int, default=1000000,
+                        help="Max posts to scan in background listing (default: 1000000)")
+    parser.add_argument("--background-interval", type=int, default=1800,
+                        help="Seconds between background listing scans (default: 1800)")
     parser.add_argument("--no-background", action="store_true",
                         help="Disable background scanner (run only discovery + fetcher)")
     parser.add_argument("-v", "--verbose", action="store_true",
