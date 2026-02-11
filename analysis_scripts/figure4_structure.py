@@ -32,19 +32,31 @@ def compute_tree_metrics_batch(conn, spam_ids, min_comments=5, max_comments=100,
     Depth 1 = direct reply to post, Depth 2+ = replies to comments.
     """
     # Get posts with actual stored comments >= min_comments AND API count < max_comments
-    posts = conn.execute('''
-        SELECT c.post_id, COUNT(*) as n
-        FROM comments c
-        JOIN posts p ON p.id = c.post_id
-        WHERE p.comment_count IS NOT NULL AND p.comment_count < ?
-        GROUP BY c.post_id
-        HAVING n >= ?
-        ORDER BY RANDOM()
-        LIMIT ?
-    ''', (max_comments, min_comments, max_posts * 2)).fetchall()
+    if max_posts and max_posts > 0:
+        posts = conn.execute('''
+            SELECT c.post_id, COUNT(*) as n
+            FROM comments c
+            JOIN posts p ON p.id = c.post_id
+            WHERE p.comment_count IS NOT NULL AND p.comment_count < ?
+            GROUP BY c.post_id
+            HAVING n >= ?
+            ORDER BY RANDOM()
+            LIMIT ?
+        ''', (max_comments, min_comments, max_posts * 2)).fetchall()
+    else:
+        posts = conn.execute('''
+            SELECT c.post_id, COUNT(*) as n
+            FROM comments c
+            JOIN posts p ON p.id = c.post_id
+            WHERE p.comment_count IS NOT NULL AND p.comment_count < ?
+            GROUP BY c.post_id
+            HAVING n >= ?
+        ''', (max_comments, min_comments)).fetchall()
 
     # Filter out spam
-    post_data = [(p[0], p[1]) for p in posts if p[0] not in spam_ids][:max_posts]
+    post_data = [(p[0], p[1]) for p in posts if p[0] not in spam_ids]
+    if max_posts and max_posts > 0:
+        post_data = post_data[:max_posts]
 
     print(f'Posts with < {max_comments} API comments (excluding spam): {len(post_data):,}')
     post_ids = [p[0] for p in post_data]
@@ -172,11 +184,13 @@ def main():
     parser.add_argument('--max-comments', type=int, default=100,
                         help='Max API-reported comments (for complete data)')
     parser.add_argument('--max-posts', type=int, default=30000,
-                        help='Maximum posts to process')
+                        help='Maximum posts to process (0 = all)')
     args = parser.parse_args()
 
     setup_style()
     conn = sqlite3.connect(args.db)
+    # Avoid large temp files on disk during heavy GROUP BY queries
+    conn.execute('PRAGMA temp_store=MEMORY')
 
     # Get spam post IDs
     spam_ids = get_spam_post_ids(conn)

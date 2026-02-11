@@ -5,90 +5,22 @@
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
 
-\bibitem[Alstott et~al.(2014)Alstott, Bullmore, and Plenz]{alstott2014powerlaw}
-Jeff Alstott, Ed~Bullmore, and Dietmar Plenz.
-\newblock powerlaw: A {Python} package for analysis of heavy-tailed
-  distributions.
-\newblock \emph{PLoS ONE}, 9\penalty0 (1):\penalty0 e85777, 2014.
+\bibitem[Park et~al.(2023)Park, O'Brien, Cai, Morris, Liang, and
+  Bernstein]{park2023generative}
+Joon~Sung Park, Joseph~C O'Brien, Carrie~Jun Cai, Meredith~Ringel Morris, Percy
+  Liang, and Michael~S Bernstein.
+\newblock Generative agents: Interactive simulacra of human behavior.
+\newblock In \emph{Proceedings of the 36th Annual ACM Symposium on User
+  Interface Software and Technology}, pages 1--22, 2023.
 
-\bibitem[Ashery et~al.(2025)Ashery, Aiello, and
-  Baronchelli]{ashery2025emergent}
-Ariel~Flint Ashery, Luca~Maria Aiello, and Andrea Baronchelli.
-\newblock Emergent social conventions and collective bias in llm populations.
-\newblock \emph{Science Advances}, 11\penalty0 (20):\penalty0 eadu9368, 2025.
-
-\bibitem[Asur et~al.(2011)Asur, Huberman, Szabo, and Wang]{asur2011}
-Sitaram Asur, Bernardo~A Huberman, Gabor Szabo, and Chunyan Wang.
-\newblock Trends in social media: Persistence and decay.
-\newblock In \emph{Proceedings of the International AAAI Conference on Web and
-  Social Media}, volume~5, pages 434--437, 2011.
-
-\bibitem[Avalle et~al.(2024)Avalle, Di~Marco, Etta, Sangiorgio, Alipour,
-  Bonetti, Alvisi, Scala, Baronchelli, Cinelli, et~al.]{avalle2024persistent}
-Michele Avalle, Niccol{\`o} Di~Marco, Gabriele Etta, Emanuele Sangiorgio,
-  Shayan Alipour, Anita Bonetti, Lorenzo Alvisi, Antonio Scala, Andrea
-  Baronchelli, Matteo Cinelli, et~al.
-\newblock Persistent interaction patterns across social media platforms and
-  over time.
-\newblock \emph{Nature}, 628\penalty0 (8008):\penalty0 582--589, 2024.
-
-\bibitem[Barabasi(2005)]{barabasi2005origin}
-Albert-Laszlo Barabasi.
-\newblock The origin of bursts and heavy tails in human dynamics.
-\newblock \emph{Nature}, 435\penalty0 (7039):\penalty0 207--211, 2005.
-
-\bibitem[Bellina et~al.(2026)Bellina, De~Marzo, and
-  Garcia]{bellina2026conformity}
-Alessandro Bellina, Giordano De~Marzo, and David Garcia.
-\newblock Conformity and social impact on ai agents.
-\newblock \emph{arXiv preprint arXiv:2601.05384}, 2026.
-
-\bibitem[Bonifazi et~al.(2023)Bonifazi, Corradini, Ursino, and
-  Virgili]{bonifazi2023modeling}
-Gianluca Bonifazi, Enrico Corradini, Domenico Ursino, and Luca Virgili.
-\newblock Modeling, evaluating, and applying the ewom power of reddit posts.
-\newblock \emph{Big Data and Cognitive Computing}, 7\penalty0 (1):\penalty0 47,
-  2023.
-
-\bibitem[Castellano et~al.(2009)Castellano, Fortunato, and
-  Loreto]{castellano2009statistical}
-Claudio Castellano, Santo Fortunato, and Vittorio Loreto.
-\newblock Statistical physics of social dynamics.
-\newblock \emph{Reviews of Modern Physics}, 81\penalty0 (2):\penalty0 591--646,
-  2009.
-
-\bibitem[Couzin et~al.(2002)Couzin, Krause, James, Ruxton, and
-  Franks]{couzin2002collective}
-Iain~D Couzin, Jens Krause, Richard James, Graeme~D Ruxton, and Nigel~R Franks.
-\newblock Collective memory and spatial sorting in animal groups.
-\newblock \emph{Journal of theoretical biology}, 218\penalty0 (1):\penalty0
-  1--11, 2002.
-
-\bibitem[De~Marzo et~al.(2023)De~Marzo, Pietronero, and
-  Garcia]{de2023emergence}
-Giordano De~Marzo, Luciano Pietronero, and David Garcia.
-\newblock Emergence of scale-free networks in social interactions among large
-  language models.
-\newblock \emph{arXiv preprint arXiv:2312.06619}, 2023.
-
-\bibitem[De~Marzo et~al.(2024)De~Marzo, Castellano, and Garcia]{de2024ai}
-Giordano De~Marzo, Claudio Castellano, and David Garcia.
-\newblock Ai agents can coordinate beyond human scale.
-\newblock \emph{arXiv preprint arXiv:2409.02822}, 2024.
-
-\bibitem[Golder and Macy(2011)]{golder2011diurnal}
-Scott~A Golder and Michael~W Macy.
-\newblock Diurnal and seasonal mood vary with work, sleep, and daylength across
-  diverse cultures.
-\newblock \emph{Science}, 333\penalty0 (6051):\penalty0 1878--1881, 2011.
-
-\bibitem[Gonzalez-Bailon et~al.(2010)Gonzalez-Bailon, Kaltenbrunner, and
-  Banchs]{gonzalez2010structure}
-Sandra Gonzalez-Bailon, Andreas Kaltenbrunner, and Rafael~E Banchs.
-\newblock The structure of political discussion networks: a model for the
-  analysis of online deliberation.
-\newblock \emph{Journal of Information Technology}, 25\penalty0 (2):\penalty0
-  230--243, 2010.
+\bibitem[Xi et~al.(2025)Xi, Chen, Guo, He, Ding, Hong, Zhang, Wang, Jin, Zhou,
+  et~al.]{xi2025rise}
+Zhiheng Xi, Wenxiang Chen, Xin Guo, Wei He, Yiwen Ding, Boyang Hong, Ming
+  Zhang, Junzhe Wang, Senjie Jin, Enyu Zhou, et~al.
+\newblock The rise and potential of large language model based agents: A
+  survey.
+\newblock \emph{Science China Information Sciences}, 68\penalty0 (2):\penalty0
+  121101, 2025.
 
 \bibitem[Guo et~al.(2024)Guo, Chen, Wang, Chang, Pei, Chawla, Wiest, and
   Zhang]{guo2024large}
@@ -98,14 +30,12 @@ Taicheng Guo, Xiuying Chen, Yaqi Wang, Ruidi Chang, Shichao Pei, Nitesh~V
   challenges.
 \newblock \emph{arXiv preprint arXiv:2402.01680}, 2024.
 
-\bibitem[Huamani(2026)]{fortune2026moltbook}
-Kaitlyn Huamani.
-\newblock Top {AI} leaders are begging people not to use {Moltbook}, a social
-  media platform for {AI} agents: It's a 'disaster waiting to happen'.
-\newblock Fortune, February 2026.
-\newblock URL
-  \url{https://fortune.com/2026/02/02/moltbook-security-agents-singularity-disaster-gary-marcus-andrej-karpathy/}.
-\newblock Accessed: February 2026.
+\bibitem[T{\"o}rnberg et~al.(2023)T{\"o}rnberg, Valeeva, Uitermark, and
+  Bail]{tornberg2023simulating}
+Petter T{\"o}rnberg, Diliara Valeeva, Justus Uitermark, and Christopher Bail.
+\newblock Simulating social media using large language models to evaluate
+  alternative news feed algorithms.
+\newblock \emph{arXiv preprint arXiv:2310.05984}, 2023.
 
 \bibitem[Lai et~al.(2024)Lai, Potter, Kim, Zhuang, Song, and
   Evans]{lai2024position}
@@ -116,13 +46,16 @@ Shiyang Lai, Yujin Potter, Junsol Kim, Richard Zhuang, Dawn Song, and James
 \newblock In \emph{Forty-first International Conference on Machine Learning},
   2024.
 
-\bibitem[Lazer et~al.(2009)Lazer, Pentland, Adamic, Aral, Barab{\'a}si, Brewer,
-  Christakis, Contractor, Fowler, Gutmann, et~al.]{lazer2009computational}
-David Lazer, Alex Pentland, Lada Adamic, Sinan Aral, Albert-L{\'a}szl{\'o}
-  Barab{\'a}si, Devon Brewer, Nicholas Christakis, Noshir Contractor, James
-  Fowler, Myron Gutmann, et~al.
-\newblock Computational social science.
-\newblock \emph{Science}, 323\penalty0 (5915):\penalty0 721--723, 2009.
+\bibitem[De~Marzo et~al.(2024)De~Marzo, Castellano, and Garcia]{de2024ai}
+Giordano De~Marzo, Claudio Castellano, and David Garcia.
+\newblock Ai agents can coordinate beyond human scale.
+\newblock \emph{arXiv preprint arXiv:2409.02822}, 2024.
+
+\bibitem[Ashery et~al.(2025)Ashery, Aiello, and
+  Baronchelli]{ashery2025emergent}
+Ariel~Flint Ashery, Luca~Maria Aiello, and Andrea Baronchelli.
+\newblock Emergent social conventions and collective bias in llm populations.
+\newblock \emph{Science Advances}, 11\penalty0 (20):\penalty0 eadu9368, 2025.
 
 \bibitem[Lin et~al.(2026)Lin, Shih, Chien, Satam, Pacheco, Shao, Salehi, and
   Satam]{lin2026silicon}
@@ -138,12 +71,54 @@ Md~Motaleb~Hossen Manik and Ge~Wang.
   enforcement in an agent-only social network.
 \newblock \emph{arXiv preprint arXiv:2602.02625}, 2026.
 
-\bibitem[Marckert and Mokkadem(2003)]{marckert2003depth}
-Jean-Fran{\c{c}}ois Marckert and Abdelkader Mokkadem.
-\newblock The depth first processes of galton--watson trees converge to the
-  same brownian excursion.
-\newblock \emph{The Annals of Probability}, 31\penalty0 (3):\penalty0
-  1655--1678, 2003.
+\bibitem[Vicsek et~al.(1995)Vicsek, Czir{\'o}k, Ben-Jacob, Cohen, and
+  Shochet]{vicsek1995novel}
+Tam{\'a}s Vicsek, Andr{\'a}s Czir{\'o}k, Eshel Ben-Jacob, Inon Cohen, and Ofer
+  Shochet.
+\newblock Novel type of phase transition in a system of self-driven particles.
+\newblock \emph{Physical review letters}, 75\penalty0 (6):\penalty0 1226, 1995.
+
+\bibitem[Couzin et~al.(2002)Couzin, Krause, James, Ruxton, and
+  Franks]{couzin2002collective}
+Iain~D Couzin, Jens Krause, Richard James, Graeme~D Ruxton, and Nigel~R Franks.
+\newblock Collective memory and spatial sorting in animal groups.
+\newblock \emph{Journal of theoretical biology}, 218\penalty0 (1):\penalty0
+  1--11, 2002.
+
+\bibitem[Castellano et~al.(2009)Castellano, Fortunato, and
+  Loreto]{castellano2009statistical}
+Claudio Castellano, Santo Fortunato, and Vittorio Loreto.
+\newblock Statistical physics of social dynamics.
+\newblock \emph{Reviews of Modern Physics}, 81\penalty0 (2):\penalty0 591--646,
+  2009.
+
+\bibitem[Lazer et~al.(2009)Lazer, Pentland, Adamic, Aral, Barab{\'a}si, Brewer,
+  Christakis, Contractor, Fowler, Gutmann, et~al.]{lazer2009computational}
+David Lazer, Alex Pentland, Lada Adamic, Sinan Aral, Albert-L{\'a}szl{\'o}
+  Barab{\'a}si, Devon Brewer, Nicholas Christakis, Noshir Contractor, James
+  Fowler, Myron Gutmann, et~al.
+\newblock Computational social science.
+\newblock \emph{Science}, 323\penalty0 (5915):\penalty0 721--723, 2009.
+
+\bibitem[Gonzalez-Bailon et~al.(2010)Gonzalez-Bailon, Kaltenbrunner, and
+  Banchs]{gonzalez2010structure}
+Sandra Gonzalez-Bailon, Andreas Kaltenbrunner, and Rafael~E Banchs.
+\newblock The structure of political discussion networks: a model for the
+  analysis of online deliberation.
+\newblock \emph{Journal of Information Technology}, 25\penalty0 (2):\penalty0
+  230--243, 2010.
+
+\bibitem[Golder and Macy(2011)]{golder2011diurnal}
+Scott~A Golder and Michael~W Macy.
+\newblock Diurnal and seasonal mood vary with work, sleep, and daylength across
+  diverse cultures.
+\newblock \emph{Science}, 333\penalty0 (6051):\penalty0 1878--1881, 2011.
+
+\bibitem[Asur et~al.(2011)Asur, Huberman, Szabo, and Wang]{asur2011}
+Sitaram Asur, Bernardo~A Huberman, Gabor Szabo, and Chunyan Wang.
+\newblock Trends in social media: Persistence and decay.
+\newblock In \emph{Proceedings of the International AAAI Conference on Web and
+  Social Media}, volume~5, pages 434--437, 2011.
 
 \bibitem[Medvedev et~al.(2019)Medvedev, Lambiotte, and Delvenne]{medvedev2018}
 Alexey~N. Medvedev, Renaud Lambiotte, and Jean-Charles Delvenne.
@@ -154,6 +129,45 @@ Alexey~N. Medvedev, Renaud Lambiotte, and Jean-Charles Delvenne.
   Publishing.
 \newblock ISBN 978-3-030-14683-2.
 
+\bibitem[Bonifazi et~al.(2023)Bonifazi, Corradini, Ursino, and
+  Virgili]{bonifazi2023modeling}
+Gianluca Bonifazi, Enrico Corradini, Domenico Ursino, and Luca Virgili.
+\newblock Modeling, evaluating, and applying the ewom power of reddit posts.
+\newblock \emph{Big Data and Cognitive Computing}, 7\penalty0 (1):\penalty0 47,
+  2023.
+
+\bibitem[Wu and Huberman(2007)]{wu2007novelty}
+Fang Wu and Bernardo~A Huberman.
+\newblock Novelty and collective attention.
+\newblock \emph{Proceedings of the National Academy of Sciences}, 104\penalty0
+  (45):\penalty0 17599--17601, 2007.
+
+\bibitem[Barabasi(2005)]{barabasi2005origin}
+Albert-Laszlo Barabasi.
+\newblock The origin of bursts and heavy tails in human dynamics.
+\newblock \emph{Nature}, 435\penalty0 (7039):\penalty0 207--211, 2005.
+
+\bibitem[Palla et~al.(2007)Palla, Barab{\'a}si, and
+  Vicsek]{palla2007quantifying}
+Gergely Palla, Albert-L{\'a}szl{\'o} Barab{\'a}si, and Tam{\'a}s Vicsek.
+\newblock Quantifying social group evolution.
+\newblock \emph{Nature}, 446\penalty0 (7136):\penalty0 664--667, 2007.
+
+\bibitem[Avalle et~al.(2024)Avalle, Di~Marco, Etta, Sangiorgio, Alipour,
+  Bonetti, Alvisi, Scala, Baronchelli, Cinelli, et~al.]{avalle2024persistent}
+Michele Avalle, Niccol{\`o} Di~Marco, Gabriele Etta, Emanuele Sangiorgio,
+  Shayan Alipour, Anita Bonetti, Lorenzo Alvisi, Antonio Scala, Andrea
+  Baronchelli, Matteo Cinelli, et~al.
+\newblock Persistent interaction patterns across social media platforms and
+  over time.
+\newblock \emph{Nature}, 628\penalty0 (8008):\penalty0 582--589, 2024.
+
+\bibitem[{OpenClaw}(2026)]{openclaw2026}
+{OpenClaw}.
+\newblock {OpenClaw} -- personal {AI} assistant, 2026.
+\newblock URL \url{https://openclaw.ai/}.
+\newblock Accessed: 2026-02-02.
+
 \bibitem[Nagli(2026)]{wiz2026moltbook}
 Gal Nagli.
 \newblock Hacking moltbook: {AI} social network reveals 1.5m {API} keys.
@@ -162,31 +176,40 @@ Gal Nagli.
   \url{https://www.wiz.io/blog/exposed-moltbook-database-reveals-millions-of-api-keys}.
 \newblock Accessed: February 2026.
 
+\bibitem[Huamani(2026)]{fortune2026moltbook}
+Kaitlyn Huamani.
+\newblock Top {AI} leaders are begging people not to use {Moltbook}, a social
+  media platform for {AI} agents: It's a 'disaster waiting to happen'.
+\newblock Fortune, February 2026.
+\newblock URL
+  \url{https://fortune.com/2026/02/02/moltbook-security-agents-singularity-disaster-gary-marcus-andrej-karpathy/}.
+\newblock Accessed: February 2026.
+
 \bibitem[Newman(2005)]{newman2005power}
 Mark~EJ Newman.
 \newblock Power laws, pareto distributions and zipf's law.
 \newblock \emph{Contemporary physics}, 46\penalty0 (5):\penalty0 323--351,
   2005.
 
-\bibitem[{OpenClaw}(2026)]{openclaw2026}
-{OpenClaw}.
-\newblock {OpenClaw} -- personal {AI} assistant, 2026.
-\newblock URL \url{https://openclaw.ai/}.
-\newblock Accessed: 2026-02-02.
+\bibitem[Marckert and Mokkadem(2003)]{marckert2003depth}
+Jean-Fran{\c{c}}ois Marckert and Abdelkader Mokkadem.
+\newblock The depth first processes of galton--watson trees converge to the
+  same brownian excursion.
+\newblock \emph{The Annals of Probability}, 31\penalty0 (3):\penalty0
+  1655--1678, 2003.
 
-\bibitem[Palla et~al.(2007)Palla, Barab{\'a}si, and
-  Vicsek]{palla2007quantifying}
-Gergely Palla, Albert-L{\'a}szl{\'o} Barab{\'a}si, and Tam{\'a}s Vicsek.
-\newblock Quantifying social group evolution.
-\newblock \emph{Nature}, 446\penalty0 (7136):\penalty0 664--667, 2007.
+\bibitem[Bellina et~al.(2026)Bellina, De~Marzo, and
+  Garcia]{bellina2026conformity}
+Alessandro Bellina, Giordano De~Marzo, and David Garcia.
+\newblock Conformity and social impact on ai agents.
+\newblock \emph{arXiv preprint arXiv:2601.05384}, 2026.
 
-\bibitem[Park et~al.(2023)Park, O'Brien, Cai, Morris, Liang, and
-  Bernstein]{park2023generative}
-Joon~Sung Park, Joseph~C O'Brien, Carrie~Jun Cai, Meredith~Ringel Morris, Percy
-  Liang, and Michael~S Bernstein.
-\newblock Generative agents: Interactive simulacra of human behavior.
-\newblock In \emph{Proceedings of the 36th Annual ACM Symposium on User
-  Interface Software and Technology}, pages 1--22, 2023.
+\bibitem[De~Marzo et~al.(2023)De~Marzo, Pietronero, and
+  Garcia]{de2023emergence}
+Giordano De~Marzo, Luciano Pietronero, and David Garcia.
+\newblock Emergence of scale-free networks in social interactions among large
+  language models.
+\newblock \emph{arXiv preprint arXiv:2312.06619}, 2023.
 
 \bibitem[Pastor-Satorras and Vespignani(2001)]{pastor2001epidemic}
 Romualdo Pastor-Satorras and Alessandro Vespignani.
@@ -203,33 +226,10 @@ Daniel~Thilo Schroeder, Meeyoung Cha, Andrea Baronchelli, Nick Bostrom,
 \newblock How malicious ai swarms can threaten democracy.
 \newblock \emph{Science}, 391\penalty0 (6783):\penalty0 354--357, 2026.
 
-\bibitem[T{\"o}rnberg et~al.(2023)T{\"o}rnberg, Valeeva, Uitermark, and
-  Bail]{tornberg2023simulating}
-Petter T{\"o}rnberg, Diliara Valeeva, Justus Uitermark, and Christopher Bail.
-\newblock Simulating social media using large language models to evaluate
-  alternative news feed algorithms.
-\newblock \emph{arXiv preprint arXiv:2310.05984}, 2023.
-
-\bibitem[Vicsek et~al.(1995)Vicsek, Czir{\'o}k, Ben-Jacob, Cohen, and
-  Shochet]{vicsek1995novel}
-Tam{\'a}s Vicsek, Andr{\'a}s Czir{\'o}k, Eshel Ben-Jacob, Inon Cohen, and Ofer
-  Shochet.
-\newblock Novel type of phase transition in a system of self-driven particles.
-\newblock \emph{Physical review letters}, 75\penalty0 (6):\penalty0 1226, 1995.
-
-\bibitem[Wu and Huberman(2007)]{wu2007novelty}
-Fang Wu and Bernardo~A Huberman.
-\newblock Novelty and collective attention.
-\newblock \emph{Proceedings of the National Academy of Sciences}, 104\penalty0
-  (45):\penalty0 17599--17601, 2007.
-
-\bibitem[Xi et~al.(2025)Xi, Chen, Guo, He, Ding, Hong, Zhang, Wang, Jin, Zhou,
-  et~al.]{xi2025rise}
-Zhiheng Xi, Wenxiang Chen, Xin Guo, Wei He, Yiwen Ding, Boyang Hong, Ming
-  Zhang, Junzhe Wang, Senjie Jin, Enyu Zhou, et~al.
-\newblock The rise and potential of large language model based agents: A
-  survey.
-\newblock \emph{Science China Information Sciences}, 68\penalty0 (2):\penalty0
-  121101, 2025.
+\bibitem[Alstott et~al.(2014)Alstott, Bullmore, and Plenz]{alstott2014powerlaw}
+Jeff Alstott, Ed~Bullmore, and Dietmar Plenz.
+\newblock powerlaw: A {Python} package for analysis of heavy-tailed
+  distributions.
+\newblock \emph{PLoS ONE}, 9\penalty0 (1):\penalty0 e85777, 2014.
 
 \end{thebibliography}
